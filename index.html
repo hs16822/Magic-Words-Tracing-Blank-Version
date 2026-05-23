@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>✨ Magic Tracing Folder Practice Blank v3 ✨</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Edu+VIC+WA+NT+Beginner:wght@600&family=Andika:wght@700&family=Patrick+Hand&display=swap');
+
+    :root {
+      --bg: #111827;
+      --panel: #16213e;
+      --panel-2: #0f3460;
+      --accent: #e94560;
+      --accent-2: #00d4ff;
+      --gold: #f9a826;
+      --good: #21c55d;
+      --danger: #ef4444;
+      --text: #ffffff;
+      --muted: #cbd5e1;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(233, 69, 96, 0.22), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(0, 212, 255, 0.18), transparent 34%),
+        var(--bg);
+      color: var(--text);
+      font-family: 'Andika', 'Microsoft JhengHei', system-ui, sans-serif;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    button, select, input, textarea { font-family: inherit; }
+    button, select, input[type="text"], input[type="number"], textarea {
+      border: none;
+      border-radius: 14px;
+      outline: none;
+    }
+    button, select, input[type="text"], input[type="number"] { min-height: 44px; }
+
+    button {
+      padding: 10px 16px;
+      background: var(--accent);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 5px 12px var(--shadow);
+      transition: transform 0.12s ease, filter 0.12s ease, background 0.12s ease;
+      user-select: none;
+      border: 0;
+    }
+    button:hover { filter: brightness(1.08); }
+    button:active { transform: translateY(1px) scale(0.98); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.5); }
+    button.secondary { background: var(--panel-2); border: 2px solid rgba(255, 255, 255, 0.16); }
+    button.success { background: var(--good); }
+    button.warning { background: var(--gold); color: #111827; }
+    button.ghost { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: none; }
+    button.danger { background: var(--danger); }
+    button.small { min-height: 34px; padding: 7px 10px; font-size: 13px; border-radius: 10px; }
+
+    select, input[type="text"], input[type="number"], textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(15, 52, 96, 0.98);
+      color: white;
+      border: 2px solid rgba(233, 69, 96, 0.72);
+      font-size: 16px;
+    }
+    textarea { resize: vertical; min-height: 76px; }
+    input[type="range"] { width: 100%; }
+    input[type="file"] { width: 100%; padding: 10px 0; color: var(--muted); }
+    .hidden { display: none !important; }
+
+    .app {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 18px;
+      gap: 14px;
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .title-block h1 { margin: 0 0 4px; font-size: clamp(24px, 3.2vw, 42px); letter-spacing: 1px; }
+    .title-block p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .tabs, .editor-toolbar, .inline-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .tabs { justify-content: flex-end; }
+    .tab-btn.active { background: var(--accent-2); color: #06111f; }
+
+    .main { min-height: 0; flex: 1; display: grid; }
+    .view { min-height: 0; display: flex; flex-direction: column; gap: 14px; }
+    .game-panel { min-height: 0; display: grid; grid-template-rows: auto 1fr; gap: 14px; }
+
+    .control-panel, .editor-panel, .card {
+      background: rgba(22, 33, 62, 0.82);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 28px var(--shadow);
+    }
+    .control-panel { padding: 14px; }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: minmax(190px, 1fr) minmax(190px, 1fr) minmax(170px, 0.9fr) auto auto auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .size-controls {
+      display: inline-grid;
+      grid-template-columns: 44px minmax(92px, auto) 44px;
+      gap: 6px;
+      align-items: center;
+    }
+    .size-controls .size-btn { min-width: 44px; padding: 8px 0; font-size: 22px; line-height: 1; }
+    #sizeLabel {
+      min-height: 44px;
+      display: grid;
+      place-items: center;
+      padding: 0 10px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-weight: 900;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .question-prompt {
+      grid-column: 1 / -1;
+      color: #fff;
+      font-weight: 800;
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.4;
+      padding: 6px 2px 0;
+    }
+    .session-note {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      padding-top: 2px;
+    }
+
+    .canvas-area {
+      position: relative;
+      min-height: 360px;
+      width: 100%;
+      display: grid;
+      place-items: center;
+    }
+    .canvas-wrapper {
+      position: relative;
+      width: min(94vw, 1040px);
+      height: min(68vh, 680px);
+      min-height: 430px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015)), var(--panel);
+      border-radius: 24px;
+      box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.15), 0 0 30px rgba(233, 69, 96, 0.36);
+      overflow: hidden;
+    }
+    .canvas-wrapper::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 18px;
+      border: 2px dashed rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+    }
+    #bgCanvas { z-index: 1; }
+    #drawCanvas { z-index: 5; cursor: crosshair; transition: filter 0.2s ease; touch-action: none; }
+    #celebrationCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 40;
+      pointer-events: none;
+      border-radius: 0;
+    }
+
+    .reference-card {
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      transform: translateX(-50%);
+      z-index: 7;
+      width: min(30%, 230px);
+      max-height: 128px;
+      padding: 8px 10px;
+      border-radius: 18px;
+      background: rgba(6, 17, 31, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      pointer-events: none;
+      text-align: center;
+    }
+    .reference-card img {
+      max-width: 100%;
+      max-height: 92px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+      border-radius: 12px;
+    }
+    .reference-card .ref-label { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+    @keyframes magicPop {
+      0% { transform: scale(1); filter: drop-shadow(0 0 0 #ff00ff); }
+      50% { transform: scale(1.03); filter: drop-shadow(0 0 26px #00d4ff); }
+      100% { transform: scale(1); filter: drop-shadow(0 0 12px #ff00ff); }
+    }
+    .success-anim { animation: magicPop 0.65s ease-out; }
+
+    .score-board {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(92vw, 500px);
+      background: rgba(15, 52, 96, 0.97);
+      padding: 30px;
+      border-radius: 24px;
+      text-align: center;
+      z-index: 50;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.62);
+      border: 3px solid #ff00ff;
+      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    #scoreText { margin: 0; font-size: clamp(42px, 7vw, 64px); color: var(--gold); }
+    #praiseText { margin: 14px 0 22px; font-size: clamp(24px, 4vw, 34px); font-weight: 900; }
+    .score-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .score-action-btn {
+      min-height: 92px;
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      font-size: 18px;
+      border-radius: 20px;
+    }
+    .score-action-btn .icon { font-size: 34px; line-height: 1; }
+
+    .editor-panel {
+      min-height: 0;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: minmax(250px, 320px) minmax(280px, 330px) minmax(330px, 1fr);
+      gap: 14px;
+    }
+    .folder-list, .word-list, .word-form {
+      min-height: 0;
+      background: rgba(255, 255, 255, 0.045);
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: auto;
+    }
+    .section-head {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .section-head h2 { margin: 0; font-size: 20px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(233, 69, 96, 0.18);
+      color: #fecdd3;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .folder-card, .word-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: rgba(15, 52, 96, 0.72);
+      border: 2px solid transparent;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+    .word-card {
+      grid-template-columns: 34px 1fr auto;
+      transition: transform 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+    }
+    .folder-card.active, .word-card.active { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.10); }
+    .word-card.dragging { opacity: 0.55; transform: scale(0.985); }
+    .word-card.drop-before { border-top-color: var(--gold); box-shadow: inset 0 4px 0 rgba(249, 168, 38, 0.75); }
+    .word-card.drop-after { border-bottom-color: var(--gold); box-shadow: inset 0 -4px 0 rgba(249, 168, 38, 0.75); }
+    .word-drag-handle {
+      width: 30px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.08);
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .word-drag-handle:active { cursor: grabbing; color: white; background: rgba(249, 168, 38, 0.22); }
+    .card-title { font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { margin-top: 3px; color: var(--muted); font-size: 12px; }
+
+    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+    .field.full { grid-column: 1 / -1; }
+    label { color: #dbeafe; font-size: 14px; font-weight: 900; }
+    .hint { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .paste-zone {
+      min-height: 122px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 14px;
+      border: 2px dashed rgba(0, 212, 255, 0.36);
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.12);
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .paste-zone:focus { border-color: var(--gold); color: white; }
+    .preview-box {
+      min-height: 120px;
+      display: grid;
+      place-items: center;
+      border: 2px dashed rgba(255, 255, 255, 0.17);
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      padding: 10px;
+    }
+    .preview-box img { max-width: 100%; max-height: 190px; object-fit: contain; border-radius: 12px; }
+    .empty-state { color: var(--muted); text-align: center; padding: 20px; line-height: 1.6; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      z-index: 100;
+      min-width: min(92vw, 320px);
+      padding: 13px 16px;
+      border-radius: 16px;
+      background: rgba(6, 17, 31, 0.95);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
+      text-align: center;
+      font-weight: 800;
+      pointer-events: none;
+    }
+
+    .danger-note {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(239, 68, 68, 0.13);
+      border: 1px solid rgba(239, 68, 68, 0.34);
+      color: #fecaca;
+      font-size: 13px;
+      line-height: 1.55;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 1180px) {
+      .controls-grid { grid-template-columns: 1fr 1fr 1fr; }
+      .controls-grid button, .size-controls { width: 100%; }
+      .editor-panel { grid-template-columns: 1fr 1fr; }
+      .word-form { grid-column: 1 / -1; }
+    }
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .app { min-height: 100vh; height: auto; }
+      .topbar { grid-template-columns: 1fr; }
+      .tabs { justify-content: flex-start; }
+      .main, .view, .game-panel { min-height: auto; }
+      .controls-grid { grid-template-columns: 1fr 1fr; }
+      .canvas-wrapper { width: 100%; height: 62vh; min-height: 420px; }
+      .editor-panel { grid-template-columns: 1fr; }
+      .word-form { grid-column: auto; }
+      .field-grid { grid-template-columns: 1fr; }
+      .reference-card { width: min(42%, 190px); max-height: 116px; }
+    }
+    @media (max-width: 560px) {
+      .app { padding: 12px; }
+      .controls-grid { grid-template-columns: 1fr; }
+      .question-prompt { font-size: 18px; }
+      .canvas-wrapper { min-height: 380px; }
+      .score-actions { grid-template-columns: 1fr; }
+      .reference-card { left: 50%; top: 6px; width: 150px; }
+      .reference-card img { max-height: 76px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="celebrationCanvas"></canvas>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="title-block">
+        <h1>✨ Magic Tracing Practice ✨</h1>
+        <p>自訂資料夾・自訂單字・可貼上圖片輔助・資料會保存在本機瀏覽器</p>
+      </div>
+      <div class="tabs">
+        <button id="playTabBtn" class="tab-btn active">Practice</button>
+        <button id="editorTabBtn" class="tab-btn secondary">Words & Folders</button>
+        <button id="fullscreenBtn" class="tab-btn ghost">⛶ Fullscreen</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section id="playView" class="view game-panel">
+        <div class="control-panel">
+          <div class="controls-grid">
+            <select id="folderSelect" aria-label="Select folder"></select>
+            <select id="wordSelect" aria-label="Select word"></select>
+            <select id="playFontSelect" aria-label="Handwriting font for text questions">
+              <option value="'Edu VIC WA NT Beginner', cursive">Font: Textbook (標準字)</option>
+              <option value="'Patrick Hand', cursive">Font: Patrick Hand (可愛手寫)</option>
+              <option value="'Comic Sans MS', cursive">Font: Comic Sans</option>
+              <option value="'Andika', sans-serif">Font: Andika (端正印刷)</option>
+            </select>
+            <div class="size-controls" aria-label="Text size controls">
+              <button id="sizeDownBtn" class="ghost size-btn" type="button">−</button>
+              <span id="sizeLabel">Size 115%</span>
+              <button id="sizeUpBtn" class="ghost size-btn" type="button">＋</button>
+            </div>
+            <button id="clearBtn" class="secondary">Clear</button>
+            <button id="submitBtn">Submit</button>
+            <button id="manageBtn" class="success">Add Words</button>
+            <div id="questionPrompt" class="question-prompt"></div>
+            <div id="sessionNote" class="session-note">目前沒有預設單字。請到 Words & Folders 新增資料夾與單字。</div>
+          </div>
+        </div>
+
+        <div class="canvas-area">
+          <div class="canvas-wrapper">
+            <canvas id="bgCanvas"></canvas>
+            <canvas id="drawCanvas"></canvas>
+            <div id="referenceCard" class="reference-card hidden">
+              <img id="referenceImage" alt="Word image reference" />
+              <div class="ref-label">Picture hint</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="scoreBoard" class="score-board hidden">
+          <h2 id="scoreText">Score: 0</h2>
+          <p id="praiseText"></p>
+          <div class="score-actions">
+            <button id="retryBtn" class="score-action-btn secondary">
+              <span class="icon">🔁</span>
+              <span>再練一次</span>
+            </button>
+            <button id="nextWordBtn" class="score-action-btn success">
+              <span class="icon">➡️</span>
+              <span>下一個單字</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="editorView" class="view editor-panel hidden">
+        <aside class="folder-list">
+          <div class="section-head">
+            <h2>資料夾</h2>
+            <span id="folderCount" class="badge">0 folders</span>
+          </div>
+          <div class="field">
+            <label for="newFolderName">新增資料夾</label>
+            <input id="newFolderName" type="text" placeholder="例如：Unit 1 / Animals" />
+          </div>
+          <div class="inline-actions" style="margin-bottom: 12px;">
+            <button id="addFolderBtn" class="small success">+ Folder</button>
+            <button id="renameFolderBtn" class="small secondary">Rename</button>
+            <button id="deleteFolderBtn" class="small danger">Delete</button>
+          </div>
+          <div id="folderList"></div>
+          <div class="danger-note">
+            Reset 會清除所有資料夾、單字與圖片，按下前會再次跳出警告。
+          </div>
+          <div class="inline-actions" style="margin-top: 12px;">
+            <button id="exportJsonBtn" class="small secondary">Export JSON</button>
+            <button id="importJsonBtn" class="small secondary">Import JSON</button>
+            <button id="resetBtn" class="small danger">Reset</button>
+            <input id="importJsonInput" type="file" accept=".json,application/json" class="hidden" />
+          </div>
+        </aside>
+
+        <aside class="word-list">
+          <div class="section-head">
+            <h2>單字列表</h2>
+            <span id="wordCount" class="badge">0 words</span>
+          </div>
+          <div id="wordList"></div>
+          <div class="hint" style="margin-top: 8px;">可拖曳單字左側的 ☰ 調整資料夾內單字順序。</div>
+          <div id="emptyWordList" class="empty-state hidden">請先建立資料夾，再新增單字。</div>
+        </aside>
+
+        <section class="word-form">
+          <div class="section-head">
+            <h2>新增 / 編輯單字</h2>
+            <button id="newWordBtn" class="small ghost">New Word</button>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="editWordText">Word / 要練習的字詞</label>
+              <input id="editWordText" type="text" placeholder="例如：apple / Aa / sentence" />
+            </div>
+            <div class="field">
+              <label for="editPrompt">Prompt / 題目說明</label>
+              <input id="editPrompt" type="text" placeholder="例如：Trace the word." />
+            </div>
+            <div class="field">
+              <label for="editGuideOpacity">Guide Opacity: <span id="opacityValue">40%</span></label>
+              <input id="editGuideOpacity" type="range" min="15" max="80" value="40" />
+              <div class="hint">調整背景字詞透明度。</div>
+            </div>
+            <div class="field">
+              <label for="editPenColor">Pen Color</label>
+              <select id="editPenColor">
+                <option value="#ff00ff">Magic Pink</option>
+                <option value="#00d4ff">Sky Blue</option>
+                <option value="#f9a826">Golden</option>
+                <option value="#ffffff">White</option>
+                <option value="#21c55d">Green</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="editStrokeWidth">Pen Width</label>
+              <input id="editStrokeWidth" type="number" min="4" max="36" value="12" />
+            </div>
+            <div class="field">
+              <label for="editImageInput">圖片輔助 / Upload</label>
+              <input id="editImageInput" type="file" accept="image/*" />
+              <div class="hint">圖片只作為提示，不會列入描寫評分。</div>
+            </div>
+            <div class="field full">
+              <label>貼上圖片 / Paste Image</label>
+              <div id="pasteZone" class="paste-zone" tabindex="0">
+                點這裡後按 Ctrl+V / ⌘+V 貼上圖片<br />或直接把圖片拖曳到這裡
+              </div>
+            </div>
+            <div class="field full">
+              <label>圖片預覽</label>
+              <div class="preview-box" id="imagePreviewBox"><span class="hint">目前沒有圖片</span></div>
+            </div>
+          </div>
+
+          <div class="editor-toolbar">
+            <button id="saveWordBtn" class="success">Save Word</button>
+            <button id="deleteWordBtn" class="danger">Delete Word</button>
+            <button id="clearImageBtn" class="secondary">Clear Image</button>
+          </div>
+          <div class="hint" style="margin-top: 12px;">
+            新增後會自動儲存在瀏覽器 localStorage，重新整理後仍會保留；只有按 Reset 並確認後才會清空。
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+    const STORAGE_KEY = "magic_tracing_custom_folder_words_blank_v3";
+    const LEGACY_STORAGE_KEYS = ["magic_tracing_custom_folder_words_v1", "magic_tracing_custom_folder_words_v2"];
+    const DEFAULT_TEXT_FONT = "'Edu VIC WA NT Beginner', cursive";
+    const FONT_OPTIONS = [
+      "'Edu VIC WA NT Beginner', cursive",
+      "'Patrick Hand', cursive",
+      "'Comic Sans MS', cursive",
+      "'Andika', sans-serif"
+    ];
+
+    const drawCanvas = document.getElementById("drawCanvas");
+    const bgCanvas = document.getElementById("bgCanvas");
+    const drawCtx = drawCanvas.getContext("2d", { willReadFrequently: true });
+    const bgCtx = bgCanvas.getContext("2d", { willReadFrequently: true });
+    const wrapper = document.querySelector(".canvas-wrapper");
+
+    const celebrationCanvas = document.getElementById("celebrationCanvas");
+    const celebrationCtx = celebrationCanvas.getContext("2d");
+
+    const playView = document.getElementById("playView");
+    const editorView = document.getElementById("editorView");
+    const playTabBtn = document.getElementById("playTabBtn");
+    const editorTabBtn = document.getElementById("editorTabBtn");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const folderSelect = document.getElementById("folderSelect");
+    const wordSelect = document.getElementById("wordSelect");
+    const questionPrompt = document.getElementById("questionPrompt");
+    const sessionNote = document.getElementById("sessionNote");
+    const playFontSelect = document.getElementById("playFontSelect");
+    const sizeLabel = document.getElementById("sizeLabel");
+    const referenceCard = document.getElementById("referenceCard");
+    const referenceImage = document.getElementById("referenceImage");
+
+    const scoreBoard = document.getElementById("scoreBoard");
+    const scoreText = document.getElementById("scoreText");
+    const praiseText = document.getElementById("praiseText");
+
+    const folderList = document.getElementById("folderList");
+    const folderCount = document.getElementById("folderCount");
+    const wordList = document.getElementById("wordList");
+    const wordCount = document.getElementById("wordCount");
+    const emptyWordList = document.getElementById("emptyWordList");
+    const newFolderName = document.getElementById("newFolderName");
+
+    const editWordText = document.getElementById("editWordText");
+    const editPrompt = document.getElementById("editPrompt");
+    const editGuideOpacity = document.getElementById("editGuideOpacity");
+    const opacityValue = document.getElementById("opacityValue");
+    const editStrokeWidth = document.getElementById("editStrokeWidth");
+    const editPenColor = document.getElementById("editPenColor");
+    const editImageInput = document.getElementById("editImageInput");
+    const pasteZone = document.getElementById("pasteZone");
+    const imagePreviewBox = document.getElementById("imagePreviewBox");
+    const importJsonInput = document.getElementById("importJsonInput");
+    const toast = document.getElementById("toast");
+
+    let library = createEmptyLibrary();
+    let selectedFolderId = null;
+    let selectedWordId = null;
+    let editingWordId = null;
+    let draftImageData = "";
+    let isDrawing = false;
+    let lastPointer = null;
+    let targetMask = null;
+    let saveTimer = null;
+    let lastVibrateTime = 0;
+    let draggedWordId = null;
+    let pointerReorder = null;
+    let suppressWordClick = false;
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+
+    function createId(prefix = "id") {
+      return prefix + "_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
+    }
+
+    function createEmptyLibrary() {
+      return {
+        version: 1,
+        folders: [],
+        settings: {
+          fontFamily: DEFAULT_TEXT_FONT,
+          textScale: 1.15
+        }
+      };
+    }
+
+    function normalizeLibrary(raw) {
+      const input = raw && typeof raw === "object" ? raw : createEmptyLibrary();
+      const settings = input.settings && typeof input.settings === "object" ? input.settings : {};
+      const folders = Array.isArray(input.folders) ? input.folders : [];
+      return {
+        version: 1,
+        settings: {
+          fontFamily: normalizeFontFamily(settings.fontFamily),
+          textScale: clamp(Number(settings.textScale ?? 1.15), 0.7, 1.7)
+        },
+        folders: folders.map((folder) => ({
+          id: String(folder.id || createId("folder")),
+          name: String(folder.name || "Untitled Folder"),
+          words: Array.isArray(folder.words) ? folder.words.map((word) => ({
+            id: String(word.id || createId("word")),
+            text: String(word.text || word.targetText || "").trim(),
+            prompt: String(word.prompt || "Trace the word."),
+            imageData: typeof word.imageData === "string" ? word.imageData : "",
+            guideOpacity: clamp(Number(word.guideOpacity ?? 0.4), 0.15, 0.8),
+            strokeWidth: clamp(Number(word.strokeWidth ?? 12), 4, 36),
+            penColor: String(word.penColor || "#ff00ff")
+          })).filter((word) => word.text) : []
+        }))
+      };
+    }
+
+    function normalizeFontFamily(fontFamily) {
+      const value = String(fontFamily || DEFAULT_TEXT_FONT).trim();
+      return FONT_OPTIONS.includes(value) ? value : DEFAULT_TEXT_FONT;
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function getSelectedFolder() {
+      if (!library.folders.length) return null;
+      let folder = library.folders.find((item) => item.id === selectedFolderId);
+      if (!folder) {
+        folder = library.folders[0];
+        selectedFolderId = folder.id;
+      }
+      return folder;
+    }
+
+    function getSelectedWord() {
+      const folder = getSelectedFolder();
+      if (!folder || !folder.words.length) return null;
+      let word = folder.words.find((item) => item.id === selectedWordId);
+      if (!word) {
+        word = folder.words[0];
+        selectedWordId = word.id;
+      }
+      return word;
+    }
+
+    function getEditingWord() {
+      const folder = getSelectedFolder();
+      if (!folder) return null;
+      return folder.words.find((word) => word.id === editingWordId) || null;
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.remove("hidden");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.add("hidden"), 1700);
+    }
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function vibrateDuringWriting(duration = 8) {
+      if (!navigator.vibrate) return;
+      const now = Date.now();
+      if (now - lastVibrateTime < 45) return;
+      lastVibrateTime = now;
+      try { navigator.vibrate(duration); } catch (err) { /* unsupported devices safely ignore */ }
+    }
+
+    function playSparkleSound(x, y) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(420 + ((x + y) % 520), audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.018, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    }
+
+    function playPopSound() {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(420, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(105, audioCtx.currentTime + 0.12);
+      gainNode.gain.setValueAtTime(0.085, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.12);
+    }
+
+    function playWinSound() {
+      if (!audioCtx) return;
+      [523.25, 659.25, 783.99, 1046.5].forEach((freq, index) => {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        const start = audioCtx.currentTime + index * 0.1;
+        gainNode.gain.setValueAtTime(0, start);
+        gainNode.gain.linearRampToValueAtTime(0.11, start + 0.035);
+        gainNode.gain.linearRampToValueAtTime(0, start + 0.32);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start(start);
+        osc.stop(start + 0.34);
+      });
+    }
+
+    let particles = [];
+    let particleAnimationId = null;
+
+    function resizeCelebrationCanvas() {
+      celebrationCanvas.width = window.innerWidth;
+      celebrationCanvas.height = window.innerHeight;
+    }
+
+    function spawnConfetti(kind) {
+      resizeCelebrationCanvas();
+      const count = kind === "mega" ? 180 : 80;
+      const palette = ["#ff00ff", "#00d4ff", "#f9a826", "#ffffff", "#21c55d"];
+      for (let i = 0; i < count; i++) {
+        const sideBurst = kind === "mega" && i % 2 === 0;
+        const x = sideBurst ? (i % 4 === 0 ? 0 : celebrationCanvas.width) : celebrationCanvas.width / 2;
+        const y = sideBurst ? celebrationCanvas.height * 0.82 : celebrationCanvas.height * 0.55;
+        const angle = sideBurst ? (x === 0 ? -Math.PI / 3 : -2 * Math.PI / 3) + (Math.random() - 0.5) * 0.7 : -Math.PI / 2 + (Math.random() - 0.5) * 1.55;
+        const speed = 4 + Math.random() * 7;
+        particles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, size: 5 + Math.random() * 8, rotate: Math.random() * Math.PI, spin: -0.2 + Math.random() * 0.4, life: 90 + Math.random() * 70, color: palette[Math.floor(Math.random() * palette.length)] });
+      }
+      if (!particleAnimationId) animateConfetti();
+    }
+
+    function animateConfetti() {
+      celebrationCtx.clearRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
+      particles = particles.filter((p) => p.life > 0);
+      particles.forEach((p) => {
+        p.life -= 1;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.14;
+        p.vx *= 0.992;
+        p.rotate += p.spin;
+        celebrationCtx.save();
+        celebrationCtx.translate(p.x, p.y);
+        celebrationCtx.rotate(p.rotate);
+        celebrationCtx.globalAlpha = Math.max(0, Math.min(1, p.life / 90));
+        celebrationCtx.fillStyle = p.color;
+        celebrationCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.62);
+        celebrationCtx.restore();
+      });
+      if (particles.length) particleAnimationId = requestAnimationFrame(animateConfetti);
+      else {
+        particleAnimationId = null;
+        celebrationCtx.clearRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
+      }
+    }
+
+    function loadFromBrowser() {
+      // This version intentionally starts with a fresh, empty question bank.
+      // Old saved data from earlier versions is ignored and removed so the page opens blank.
+      LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          library = normalizeLibrary(JSON.parse(saved));
+        } catch (err) {
+          console.warn("Failed to parse saved data", err);
+          library = createEmptyLibrary();
+        }
+      } else {
+        library = createEmptyLibrary();
+      }
+      const firstFolder = library.folders[0];
+      selectedFolderId = firstFolder ? firstFolder.id : null;
+      selectedWordId = firstFolder && firstFolder.words[0] ? firstFolder.words[0].id : null;
+      editingWordId = selectedWordId;
+      playFontSelect.value = library.settings.fontFamily;
+      renderAll();
+    }
+
+    function saveToBrowser(show = false) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(library));
+      if (show) showToast("Saved.");
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => saveToBrowser(false), 200);
+    }
+
+    function exportJson() {
+      const payload = JSON.stringify(library, null, 2);
+      const blob = new Blob([payload], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const date = new Date().toISOString().slice(0, 10);
+      link.href = url;
+      link.download = `magic-tracing-custom-words-${date}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast("JSON exported.");
+    }
+
+    function importJsonFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          library = normalizeLibrary(JSON.parse(reader.result));
+          const firstFolder = library.folders[0];
+          selectedFolderId = firstFolder ? firstFolder.id : null;
+          selectedWordId = firstFolder && firstFolder.words[0] ? firstFolder.words[0].id : null;
+          editingWordId = selectedWordId;
+          saveToBrowser(false);
+          renderAll();
+          showToast("JSON imported.");
+        } catch (err) {
+          alert("Import failed. Please choose a valid JSON file.");
+          console.error(err);
+        } finally {
+          importJsonInput.value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function renderAll() {
+      renderPracticeSelectors();
+      renderEditor();
+      updateSizeLabel();
+      resizeCanvas();
+    }
+
+    function renderPracticeSelectors() {
+      folderSelect.innerHTML = "";
+      wordSelect.innerHTML = "";
+
+      if (!library.folders.length) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No folders yet";
+        folderSelect.appendChild(option);
+        const wordOption = document.createElement("option");
+        wordOption.value = "";
+        wordOption.textContent = "No words yet";
+        wordSelect.appendChild(wordOption);
+        folderSelect.disabled = true;
+        wordSelect.disabled = true;
+        document.getElementById("submitBtn").disabled = true;
+        return;
+      }
+
+      folderSelect.disabled = false;
+      library.folders.forEach((folder) => {
+        const option = document.createElement("option");
+        option.value = folder.id;
+        option.textContent = `📁 ${folder.name} (${folder.words.length})`;
+        folderSelect.appendChild(option);
+      });
+      const folder = getSelectedFolder();
+      folderSelect.value = folder ? folder.id : "";
+
+      if (!folder || !folder.words.length) {
+        const wordOption = document.createElement("option");
+        wordOption.value = "";
+        wordOption.textContent = "No words in this folder";
+        wordSelect.appendChild(wordOption);
+        wordSelect.disabled = true;
+        document.getElementById("submitBtn").disabled = true;
+        return;
+      }
+
+      wordSelect.disabled = false;
+      document.getElementById("submitBtn").disabled = false;
+      folder.words.forEach((word) => {
+        const option = document.createElement("option");
+        option.value = word.id;
+        option.textContent = `${word.imageData ? "🖼️" : "🔤"} ${word.text}`;
+        wordSelect.appendChild(option);
+      });
+      const word = getSelectedWord();
+      wordSelect.value = word ? word.id : "";
+    }
+
+    function renderEditor() {
+      folderCount.textContent = `${library.folders.length} folders`;
+      folderList.innerHTML = "";
+      library.folders.forEach((folder) => {
+        const card = document.createElement("div");
+        card.className = "folder-card" + (folder.id === selectedFolderId ? " active" : "");
+        card.innerHTML = `<div><div class="card-title">📁 ${escapeHtml(folder.name)}</div><div class="card-meta">${folder.words.length} words</div></div><span class="badge">Folder</span>`;
+        card.addEventListener("click", () => {
+          selectedFolderId = folder.id;
+          selectedWordId = folder.words[0] ? folder.words[0].id : null;
+          editingWordId = selectedWordId;
+          renderAll();
+        });
+        folderList.appendChild(card);
+      });
+
+      renderWordList();
+      syncEditorFields();
+    }
+
+    function renderWordList() {
+      const folder = getSelectedFolder();
+      wordList.innerHTML = "";
+      const count = folder ? folder.words.length : 0;
+      wordCount.textContent = `${count} words`;
+      emptyWordList.classList.toggle("hidden", !!folder && count > 0);
+      if (!folder) {
+        emptyWordList.textContent = "請先建立資料夾，再新增單字。";
+        return;
+      }
+      if (!folder.words.length) {
+        emptyWordList.textContent = "這個資料夾目前沒有單字。請在右側新增。";
+        return;
+      }
+      folder.words.forEach((word) => {
+        const card = document.createElement("div");
+        card.className = "word-card" + (word.id === editingWordId ? " active" : "");
+        card.dataset.wordId = word.id;
+        card.draggable = true;
+        card.innerHTML = `
+          <div class="word-drag-handle" title="拖曳排序" aria-label="拖曳排序">☰</div>
+          <div><div class="card-title">${word.imageData ? "🖼️" : "🔤"} ${escapeHtml(word.text)}</div><div class="card-meta">${escapeHtml(word.prompt || "Trace the word.")}</div></div>
+          <span class="badge">Word</span>
+        `;
+        const handle = card.querySelector(".word-drag-handle");
+        handle.addEventListener("click", (event) => event.stopPropagation());
+        handle.addEventListener("pointerdown", (event) => startPointerReorder(event, word.id));
+        card.addEventListener("dragstart", (event) => startNativeWordDrag(event, word.id));
+        card.addEventListener("dragover", (event) => handleNativeWordDragOver(event, word.id));
+        card.addEventListener("drop", (event) => handleNativeWordDrop(event, word.id));
+        card.addEventListener("dragend", clearWordDragVisuals);
+        card.addEventListener("click", () => {
+          if (suppressWordClick) return;
+          editingWordId = word.id;
+          selectedWordId = word.id;
+          syncEditorFields();
+          renderPracticeSelectors();
+          resizeCanvas();
+          renderWordList();
+        });
+        wordList.appendChild(card);
+      });
+    }
+
+    function clearWordDragVisuals() {
+      draggedWordId = null;
+      pointerReorder = null;
+      document.querySelectorAll(".word-card").forEach((card) => {
+        card.classList.remove("dragging", "drop-before", "drop-after");
+      });
+    }
+
+    function markDropTarget(targetId, placeAfter) {
+      document.querySelectorAll(".word-card").forEach((card) => {
+        card.classList.remove("drop-before", "drop-after");
+        if (card.dataset.wordId === targetId) card.classList.add(placeAfter ? "drop-after" : "drop-before");
+      });
+    }
+
+    function reorderWordInFolder(dragId, targetId, placeAfter = false) {
+      const folder = getSelectedFolder();
+      if (!folder || !dragId || !targetId || dragId === targetId) return false;
+      const fromIndex = folder.words.findIndex((word) => word.id === dragId);
+      const targetIndex = folder.words.findIndex((word) => word.id === targetId);
+      if (fromIndex < 0 || targetIndex < 0) return false;
+      const [moved] = folder.words.splice(fromIndex, 1);
+      let insertIndex = folder.words.findIndex((word) => word.id === targetId);
+      if (insertIndex < 0) insertIndex = folder.words.length;
+      if (placeAfter) insertIndex += 1;
+      folder.words.splice(insertIndex, 0, moved);
+      selectedWordId = moved.id;
+      editingWordId = moved.id;
+      saveToBrowser(false);
+      return true;
+    }
+
+    function startNativeWordDrag(event, wordId) {
+      draggedWordId = wordId;
+      suppressWordClick = true;
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", wordId);
+      event.currentTarget.classList.add("dragging");
+    }
+
+    function handleNativeWordDragOver(event, targetId) {
+      if (!draggedWordId || draggedWordId === targetId) return;
+      event.preventDefault();
+      const rect = event.currentTarget.getBoundingClientRect();
+      const placeAfter = event.clientY > rect.top + rect.height / 2;
+      markDropTarget(targetId, placeAfter);
+      event.dataTransfer.dropEffect = "move";
+    }
+
+    function handleNativeWordDrop(event, targetId) {
+      event.preventDefault();
+      const rect = event.currentTarget.getBoundingClientRect();
+      const placeAfter = event.clientY > rect.top + rect.height / 2;
+      const changed = reorderWordInFolder(draggedWordId, targetId, placeAfter);
+      clearWordDragVisuals();
+      if (changed) {
+        renderAll();
+        showToast("單字順序已更新。");
+      }
+      setTimeout(() => { suppressWordClick = false; }, 0);
+    }
+
+    function startPointerReorder(event, wordId) {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      pointerReorder = { pointerId: event.pointerId, wordId, targetId: null, placeAfter: false, moved: false };
+      suppressWordClick = true;
+      const card = event.currentTarget.closest(".word-card");
+      card?.classList.add("dragging");
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    }
+
+    function updatePointerReorder(event) {
+      if (!pointerReorder || event.pointerId !== pointerReorder.pointerId) return;
+      pointerReorder.moved = true;
+      const element = document.elementFromPoint(event.clientX, event.clientY);
+      const card = element?.closest?.(".word-card");
+      if (!card || card.dataset.wordId === pointerReorder.wordId) {
+        document.querySelectorAll(".word-card").forEach((item) => item.classList.remove("drop-before", "drop-after"));
+        return;
+      }
+      const rect = card.getBoundingClientRect();
+      pointerReorder.targetId = card.dataset.wordId;
+      pointerReorder.placeAfter = event.clientY > rect.top + rect.height / 2;
+      markDropTarget(pointerReorder.targetId, pointerReorder.placeAfter);
+      event.preventDefault();
+    }
+
+    function finishPointerReorder(event) {
+      if (!pointerReorder || event.pointerId !== pointerReorder.pointerId) return;
+      const { wordId, targetId, placeAfter, moved } = pointerReorder;
+      let changed = false;
+      if (moved && targetId) changed = reorderWordInFolder(wordId, targetId, placeAfter);
+      clearWordDragVisuals();
+      if (changed) {
+        renderAll();
+        showToast("單字順序已更新。");
+      }
+      setTimeout(() => { suppressWordClick = false; }, 80);
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+    }
+
+    function syncEditorFields() {
+      const word = getEditingWord();
+      if (!word) {
+        editWordText.value = "";
+        editPrompt.value = "Trace the word.";
+        editGuideOpacity.value = "40";
+        opacityValue.textContent = "40%";
+        editStrokeWidth.value = "12";
+        editPenColor.value = "#ff00ff";
+        draftImageData = "";
+        renderImagePreview("");
+        return;
+      }
+      editWordText.value = word.text;
+      editPrompt.value = word.prompt || "Trace the word.";
+      editGuideOpacity.value = String(Math.round((word.guideOpacity ?? 0.4) * 100));
+      opacityValue.textContent = `${Math.round((word.guideOpacity ?? 0.4) * 100)}%`;
+      editStrokeWidth.value = String(word.strokeWidth || 12);
+      editPenColor.value = word.penColor || "#ff00ff";
+      draftImageData = word.imageData || "";
+      renderImagePreview(draftImageData);
+    }
+
+    function renderImagePreview(imageData) {
+      imagePreviewBox.innerHTML = "";
+      if (imageData) {
+        const img = document.createElement("img");
+        img.alt = "Word image preview";
+        img.src = imageData;
+        imagePreviewBox.appendChild(img);
+      } else {
+        const span = document.createElement("span");
+        span.className = "hint";
+        span.textContent = "目前沒有圖片";
+        imagePreviewBox.appendChild(span);
+      }
+    }
+
+    function addFolder() {
+      const name = newFolderName.value.trim();
+      if (!name) {
+        showToast("請輸入資料夾名稱。");
+        return;
+      }
+      const folder = { id: createId("folder"), name, words: [] };
+      library.folders.push(folder);
+      selectedFolderId = folder.id;
+      selectedWordId = null;
+      editingWordId = null;
+      newFolderName.value = "";
+      saveToBrowser(false);
+      renderAll();
+      showToast("Folder added.");
+    }
+
+    function renameFolder() {
+      const folder = getSelectedFolder();
+      if (!folder) return showToast("目前沒有資料夾。");
+      const nextName = prompt("輸入新的資料夾名稱：", folder.name);
+      if (!nextName || !nextName.trim()) return;
+      folder.name = nextName.trim();
+      saveToBrowser(false);
+      renderAll();
+    }
+
+    function deleteFolder() {
+      const folder = getSelectedFolder();
+      if (!folder) return showToast("目前沒有資料夾。");
+      if (!confirm(`確定刪除資料夾「${folder.name}」？裡面的單字和圖片也會一起刪除。`)) return;
+      library.folders = library.folders.filter((item) => item.id !== folder.id);
+      const firstFolder = library.folders[0];
+      selectedFolderId = firstFolder ? firstFolder.id : null;
+      selectedWordId = firstFolder && firstFolder.words[0] ? firstFolder.words[0].id : null;
+      editingWordId = selectedWordId;
+      saveToBrowser(false);
+      renderAll();
+    }
+
+    function newWordForm() {
+      editingWordId = null;
+      selectedWordId = null;
+      editWordText.value = "";
+      editPrompt.value = "Trace the word.";
+      editGuideOpacity.value = "40";
+      opacityValue.textContent = "40%";
+      editStrokeWidth.value = "12";
+      editPenColor.value = "#ff00ff";
+      draftImageData = "";
+      renderImagePreview("");
+      renderWordList();
+      editWordText.focus();
+    }
+
+    function saveWord() {
+      let folder = getSelectedFolder();
+      if (!folder) {
+        const newName = prompt("請先建立資料夾。輸入第一個資料夾名稱：", "My Words");
+        if (!newName || !newName.trim()) return;
+        folder = { id: createId("folder"), name: newName.trim(), words: [] };
+        library.folders.push(folder);
+        selectedFolderId = folder.id;
+      }
+      const text = editWordText.value.trim();
+      if (!text) {
+        showToast("請輸入要練習的單字或字詞。");
+        return;
+      }
+      const payload = {
+        text,
+        prompt: editPrompt.value.trim() || "Trace the word.",
+        imageData: draftImageData || "",
+        guideOpacity: Number(editGuideOpacity.value) / 100,
+        strokeWidth: clamp(Number(editStrokeWidth.value || 12), 4, 36),
+        penColor: editPenColor.value || "#ff00ff"
+      };
+      let word = folder.words.find((item) => item.id === editingWordId);
+      if (word) {
+        Object.assign(word, payload);
+      } else {
+        word = { id: createId("word"), ...payload };
+        folder.words.push(word);
+      }
+      editingWordId = word.id;
+      selectedWordId = word.id;
+      saveToBrowser(false);
+      renderAll();
+      showToast("Word saved.");
+    }
+
+    function deleteWord() {
+      const folder = getSelectedFolder();
+      const word = getEditingWord();
+      if (!folder || !word) return showToast("沒有可刪除的單字。");
+      if (!confirm(`確定刪除「${word.text}」？`)) return;
+      folder.words = folder.words.filter((item) => item.id !== word.id);
+      const firstWord = folder.words[0];
+      selectedWordId = firstWord ? firstWord.id : null;
+      editingWordId = selectedWordId;
+      saveToBrowser(false);
+      renderAll();
+    }
+
+    function clearImage() {
+      draftImageData = "";
+      renderImagePreview("");
+      const word = getEditingWord();
+      if (word) {
+        word.imageData = "";
+        saveToBrowser(false);
+        renderAll();
+      }
+    }
+
+    function handleImageFile(file) {
+      if (!file || !file.type.startsWith("image/")) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        draftImageData = String(reader.result || "");
+        renderImagePreview(draftImageData);
+        showToast("Image added. Remember to Save Word.");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetAll() {
+      if (!confirm("⚠️ 第一次確認：Reset 會清空所有資料夾、單字與圖片，且無法復原。確定要繼續嗎？")) return;
+      if (!confirm("⚠️ 第二次確認：真的要刪除全部資料並回到空白狀態嗎？")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+      library = createEmptyLibrary();
+      selectedFolderId = null;
+      selectedWordId = null;
+      editingWordId = null;
+      draftImageData = "";
+      clearDrawing(false);
+      renderAll();
+      showToast("Reset complete. The page is blank now.");
+    }
+
+    function switchView(viewName) {
+      const editor = viewName === "editor";
+      editorView.classList.toggle("hidden", !editor);
+      playView.classList.toggle("hidden", editor);
+      editorTabBtn.classList.toggle("active", editor);
+      playTabBtn.classList.toggle("active", !editor);
+      if (editor) renderEditor();
+      else resizeCanvas();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+
+    function updateFullscreenButton() {
+      fullscreenBtn.textContent = document.fullscreenElement ? "⤢ Exit Fullscreen" : "⛶ Fullscreen";
+    }
+
+    function updateSizeLabel() {
+      sizeLabel.textContent = `Size ${Math.round(library.settings.textScale * 100)}%`;
+    }
+
+    function changeTextSize(delta) {
+      library.settings.textScale = clamp((library.settings.textScale || 1.15) + delta, 0.70, 1.70);
+      updateSizeLabel();
+      saveToBrowser(false);
+      resizeCanvas();
+    }
+
+    function resizeCanvas() {
+      const rect = wrapper.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      drawCanvas.width = Math.round(rect.width);
+      drawCanvas.height = Math.round(rect.height);
+      bgCanvas.width = Math.round(rect.width);
+      bgCanvas.height = Math.round(rect.height);
+      clearDrawing(false);
+      renderCurrentQuestion();
+    }
+
+    function clearDrawing(playSound = true) {
+      if (playSound) {
+        initAudio();
+        playPopSound();
+      }
+      drawCanvas.classList.remove("success-anim");
+      drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+      lastPointer = null;
+    }
+
+    function renderCurrentQuestion() {
+      const word = getSelectedWord();
+      bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+      targetMask = null;
+      scoreBoard.classList.add("hidden");
+
+      if (!word) {
+        questionPrompt.textContent = "No words yet.";
+        sessionNote.textContent = "請到 Words & Folders 新增資料夾與單字。新增完成後會自動保存在瀏覽器。";
+        referenceCard.classList.add("hidden");
+        return;
+      }
+
+      questionPrompt.textContent = word.prompt || "Trace the word.";
+      const folder = getSelectedFolder();
+      sessionNote.textContent = `資料夾：${folder ? folder.name : ""} ｜ 目前練習：${word.text}`;
+      if (word.imageData) {
+        referenceImage.src = word.imageData;
+        referenceCard.classList.remove("hidden");
+      } else {
+        referenceCard.classList.add("hidden");
+      }
+      drawTextQuestion(word);
+    }
+
+    function drawTextQuestion(word) {
+      const text = word.text || "";
+      const fontFamily = normalizeFontFamily(library.settings.fontFamily);
+      const reservedTop = word.imageData ? Math.min(136, Math.max(108, bgCanvas.height * 0.22)) : 0;
+      const fontSize = fitTextFontSize(text, fontFamily, reservedTop);
+      const font = `900 ${fontSize}px ${fontFamily}`;
+      const lines = splitLines(text);
+      const lineHeight = fontSize * 1.05;
+      const writingHeight = bgCanvas.height - reservedTop;
+      const centerY = reservedTop + writingHeight / 2 + (word.imageData ? 10 : 0);
+      const startY = centerY - ((lines.length - 1) * lineHeight) / 2;
+      const maxWidth = bgCanvas.width * 0.92;
+
+      bgCtx.save();
+      bgCtx.globalAlpha = word.guideOpacity ?? 0.4;
+      bgCtx.fillStyle = "#ffffff";
+      bgCtx.textAlign = "center";
+      bgCtx.textBaseline = "middle";
+      bgCtx.font = font;
+      drawTextLines(bgCtx, lines, bgCanvas.width / 2, startY, maxWidth, lineHeight);
+      bgCtx.restore();
+
+      const maskCanvas = document.createElement("canvas");
+      maskCanvas.width = bgCanvas.width;
+      maskCanvas.height = bgCanvas.height;
+      const maskCtx = maskCanvas.getContext("2d", { willReadFrequently: true });
+      maskCtx.fillStyle = "#000000";
+      maskCtx.textAlign = "center";
+      maskCtx.textBaseline = "middle";
+      maskCtx.font = font;
+      drawTextLines(maskCtx, lines, maskCanvas.width / 2, startY, maxWidth, lineHeight);
+      targetMask = createAlphaMask(maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data);
+    }
+
+    function drawTextLines(ctx, lines, x, startY, maxWidth, lineHeight) {
+      lines.forEach((line, index) => {
+        const y = startY + index * lineHeight;
+        ctx.fillText(line, x, y, maxWidth);
+      });
+    }
+
+    function fitTextFontSize(text, fontFamily, reservedTop = 0) {
+      const lines = splitLines(text);
+      const availableHeight = Math.max(180, bgCanvas.height - reservedTop - 24);
+      let size = Math.min(availableHeight * 0.74 * (library.settings.textScale || 1.15), 360);
+      const maxWidth = bgCanvas.width * 0.92;
+      while (size > 34) {
+        bgCtx.font = `900 ${size}px ${fontFamily}`;
+        const widest = Math.max(...lines.map((line) => bgCtx.measureText(line).width));
+        const totalHeight = lines.length * size * 1.05;
+        if (widest <= maxWidth && totalHeight <= availableHeight * 0.90) break;
+        size -= 4;
+      }
+      return size;
+    }
+
+    function splitLines(text) {
+      const cleaned = String(text || "").trim() || " ";
+      if (cleaned.includes("\n")) return cleaned.split(/\n+/).filter(Boolean);
+      if (cleaned.length <= 12) return [cleaned];
+      const words = cleaned.split(/\s+/);
+      if (words.length === 1) {
+        const chunks = [];
+        for (let i = 0; i < cleaned.length; i += 10) chunks.push(cleaned.slice(i, i + 10));
+        return chunks;
+      }
+      const lines = [];
+      let line = "";
+      words.forEach((word) => {
+        const test = line ? `${line} ${word}` : word;
+        if (test.length > 16) {
+          if (line) lines.push(line);
+          line = word;
+        } else {
+          line = test;
+        }
+      });
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    function createAlphaMask(data) {
+      const mask = new Uint8Array(data.length / 4);
+      for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+        mask[p] = data[i + 3] > 20 ? 1 : 0;
+      }
+      return mask;
+    }
+
+    function getPointerPosition(e) {
+      const point = e.touches ? e.touches[0] : e;
+      const rect = drawCanvas.getBoundingClientRect();
+      return {
+        x: (point.clientX - rect.left) * (drawCanvas.width / rect.width),
+        y: (point.clientY - rect.top) * (drawCanvas.height / rect.height)
+      };
+    }
+
+    function startDrawing(e) {
+      if (!getSelectedWord()) return;
+      initAudio();
+      isDrawing = true;
+      lastPointer = getPointerPosition(e);
+      drawPoint(lastPointer.x, lastPointer.y);
+      vibrateDuringWriting(10);
+      e.preventDefault();
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+      lastPointer = null;
+      drawCtx.beginPath();
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const word = getSelectedWord() || {};
+      const pos = getPointerPosition(e);
+      drawCtx.lineWidth = word.strokeWidth || 12;
+      drawCtx.lineCap = "round";
+      drawCtx.lineJoin = "round";
+      drawCtx.strokeStyle = word.penColor || "#ff00ff";
+      drawCtx.shadowBlur = 7;
+      drawCtx.shadowColor = word.penColor || "#ff00ff";
+      drawCtx.beginPath();
+      if (lastPointer) drawCtx.moveTo(lastPointer.x, lastPointer.y);
+      drawCtx.lineTo(pos.x, pos.y);
+      drawCtx.stroke();
+      lastPointer = pos;
+      vibrateDuringWriting(6);
+      if (Math.random() > 0.72) playSparkleSound(pos.x, pos.y);
+    }
+
+    function drawPoint(x, y) {
+      const word = getSelectedWord() || {};
+      drawCtx.fillStyle = word.penColor || "#ff00ff";
+      drawCtx.shadowBlur = 7;
+      drawCtx.shadowColor = word.penColor || "#ff00ff";
+      drawCtx.beginPath();
+      drawCtx.arc(x, y, (word.strokeWidth || 12) / 2, 0, Math.PI * 2);
+      drawCtx.fill();
+    }
+
+    function calculateScore() {
+      initAudio();
+      if (!getSelectedWord()) {
+        showToast("請先新增並選擇單字。");
+        return;
+      }
+      if (!targetMask) {
+        showToast("Please wait for the word to finish loading.");
+        return;
+      }
+      const drawData = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height).data;
+      let targetPixels = 0, drawnOnTarget = 0, drawnOffTarget = 0, drawnPixels = 0;
+      for (let i = 3, p = 0; i < drawData.length; i += 4, p++) {
+        const isTarget = targetMask[p] === 1;
+        const isDrawn = drawData[i] > 0;
+        if (isTarget) targetPixels++;
+        if (isDrawn) drawnPixels++;
+        if (isTarget && isDrawn) drawnOnTarget++;
+        if (!isTarget && isDrawn) drawnOffTarget++;
+      }
+      if (!drawnPixels) return showScoreBoard(0);
+      const coverage = Math.min((drawnOnTarget / Math.max(targetPixels, 1)) * 100 * 1.85, 100);
+      const accuracyPenalty = (drawnOffTarget / Math.max(drawnOnTarget, 1)) * 18;
+      const tooLittlePenalty = drawnOnTarget < targetPixels * 0.05 ? 35 : 0;
+      const finalScore = clamp(Math.round(coverage - accuracyPenalty - tooLittlePenalty), 0, 100);
+      showScoreBoard(finalScore);
+    }
+
+    function showScoreBoard(score) {
+      scoreBoard.classList.remove("hidden");
+      scoreText.textContent = `Score: ${score}`;
+      let praise = "Keep Trying!";
+      if (score >= 90) {
+        praise = "Perfect! ✨";
+        playWinSound();
+        spawnConfetti("mega");
+        drawCanvas.classList.add("success-anim");
+      } else if (score >= 70) {
+        praise = "Great Job!";
+        playPopSound();
+        spawnConfetti("mini");
+        drawCanvas.classList.add("success-anim");
+      } else {
+        playPopSound();
+      }
+      praiseText.textContent = praise;
+    }
+
+    function retryWord() {
+      initAudio();
+      playPopSound();
+      scoreBoard.classList.add("hidden");
+      clearDrawing(false);
+    }
+
+    function nextWord() {
+      initAudio();
+      playPopSound();
+      scoreBoard.classList.add("hidden");
+      clearDrawing(false);
+      const folder = getSelectedFolder();
+      if (!folder || !folder.words.length) return;
+      const currentIndex = folder.words.findIndex((word) => word.id === selectedWordId);
+      const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % folder.words.length;
+      selectedWordId = folder.words[nextIndex].id;
+      editingWordId = selectedWordId;
+      renderPracticeSelectors();
+      resizeCanvas();
+      renderEditor();
+    }
+
+    function updatePlayFont() {
+      library.settings.fontFamily = normalizeFontFamily(playFontSelect.value);
+      playFontSelect.value = library.settings.fontFamily;
+      saveToBrowser(false);
+      resizeCanvas();
+    }
+
+    function attachEvents() {
+      playTabBtn.addEventListener("click", () => switchView("play"));
+      editorTabBtn.addEventListener("click", () => switchView("editor"));
+      fullscreenBtn.addEventListener("click", toggleFullscreen);
+      document.addEventListener("fullscreenchange", updateFullscreenButton);
+      document.getElementById("manageBtn").addEventListener("click", () => switchView("editor"));
+
+      folderSelect.addEventListener("change", (e) => {
+        selectedFolderId = e.target.value;
+        const folder = getSelectedFolder();
+        selectedWordId = folder && folder.words[0] ? folder.words[0].id : null;
+        editingWordId = selectedWordId;
+        scoreBoard.classList.add("hidden");
+        renderAll();
+      });
+      wordSelect.addEventListener("change", (e) => {
+        selectedWordId = e.target.value;
+        editingWordId = selectedWordId;
+        scoreBoard.classList.add("hidden");
+        renderPracticeSelectors();
+        renderEditor();
+        resizeCanvas();
+      });
+      playFontSelect.addEventListener("change", updatePlayFont);
+      document.getElementById("sizeDownBtn").addEventListener("click", () => changeTextSize(-0.10));
+      document.getElementById("sizeUpBtn").addEventListener("click", () => changeTextSize(0.10));
+      document.getElementById("clearBtn").addEventListener("click", () => { scoreBoard.classList.add("hidden"); clearDrawing(true); });
+      document.getElementById("submitBtn").addEventListener("click", calculateScore);
+      document.getElementById("retryBtn").addEventListener("click", retryWord);
+      document.getElementById("nextWordBtn").addEventListener("click", nextWord);
+
+      drawCanvas.addEventListener("mousedown", startDrawing);
+      drawCanvas.addEventListener("mousemove", draw);
+      window.addEventListener("mouseup", stopDrawing);
+      drawCanvas.addEventListener("mouseleave", stopDrawing);
+      drawCanvas.addEventListener("touchstart", startDrawing, { passive: false });
+      drawCanvas.addEventListener("touchmove", draw, { passive: false });
+      drawCanvas.addEventListener("touchend", stopDrawing);
+      drawCanvas.addEventListener("touchcancel", stopDrawing);
+      window.addEventListener("resize", () => { resizeCelebrationCanvas(); resizeCanvas(); });
+      document.addEventListener("pointermove", updatePointerReorder, { passive: false });
+      document.addEventListener("pointerup", finishPointerReorder);
+      document.addEventListener("pointercancel", finishPointerReorder);
+
+      document.getElementById("addFolderBtn").addEventListener("click", addFolder);
+      newFolderName.addEventListener("keydown", (e) => { if (e.key === "Enter") addFolder(); });
+      document.getElementById("renameFolderBtn").addEventListener("click", renameFolder);
+      document.getElementById("deleteFolderBtn").addEventListener("click", deleteFolder);
+      document.getElementById("newWordBtn").addEventListener("click", newWordForm);
+      document.getElementById("saveWordBtn").addEventListener("click", saveWord);
+      document.getElementById("deleteWordBtn").addEventListener("click", deleteWord);
+      document.getElementById("clearImageBtn").addEventListener("click", clearImage);
+      document.getElementById("resetBtn").addEventListener("click", resetAll);
+      document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
+      document.getElementById("importJsonBtn").addEventListener("click", () => importJsonInput.click());
+      importJsonInput.addEventListener("change", (e) => importJsonFile(e.target.files[0]));
+
+      editGuideOpacity.addEventListener("input", () => {
+        opacityValue.textContent = `${Number(editGuideOpacity.value)}%`;
+      });
+      editImageInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        handleImageFile(file);
+        editImageInput.value = "";
+      });
+      pasteZone.addEventListener("paste", (e) => {
+        const items = Array.from(e.clipboardData?.items || []);
+        const imageItem = items.find((item) => item.type.startsWith("image/"));
+        if (imageItem) {
+          e.preventDefault();
+          handleImageFile(imageItem.getAsFile());
+        }
+      });
+      pasteZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        pasteZone.focus();
+      });
+      pasteZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const file = Array.from(e.dataTransfer?.files || []).find((item) => item.type.startsWith("image/"));
+        handleImageFile(file);
+      });
+      pasteZone.addEventListener("click", () => pasteZone.focus());
+    }
+
+    attachEvents();
+    resizeCelebrationCanvas();
+    loadFromBrowser();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => resizeCanvas());
+  </script>
+</body>
+</html>
